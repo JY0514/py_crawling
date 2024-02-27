@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<h1 class="h1">파이썬 크롤링 <br> k스타트업 & 중소기업벤처 & IRIS & 서울경제진흥원 사업 모집 공고</h1>
+<head>
+    <style>
+        .pagination {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     margin-top: 20px;
+ }
+
+
+ .pagination a {
+     display: inline-block;
+     padding: 8px 16px;
+     margin: 0 4px;
+     color: #333;
+     text-decoration: none;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+ }
+
+
+ .pagination a.current-page {
+     background-color: #333;
+     color: #fff;
+ }
+
+
+  .h1{
+  text-align: center;
+  }
+
+
+  table {
+      width: 1900px;
+      border-collapse: collapse;
+      margin: 0 auto;
+  }
+
+
+  th,
+  td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+         color: black;
+      text-decoration: none;
+      font-size:10px;
+  }
+
+  th {
+      background-color: lightgray;
+      text-align: center;
+         color: black;
+      text-decoration: none;
+       padding: 6px;
+  }
+  .name{
+      color: black;
+      text-decoration: none;
+  }
+
+ .pagination {
+ display: flex;
+ justify-content: center;
+ list-style: none;
+ padding: 0;
+ }
+
+ .page-item {
+ margin-right: 5px;
+ }
+
+
+ .page-link {
+ display: inline-block;
+ padding: 5px 10px;
+ background-color: #f2f2f2;
+ color: #333;
+ text-decoration: none;
+ border: 1px solid #ccc;
+ border-radius: 3px;
+ }
+
+
+ .page-link:hover {
+ background-color: #e0e0e0;
+ }
+
+ .page-item.active .page-link {
+ background-color: #333;
+ color: #fff;
+ border-color: #333;
+ }
+
+ .page-item:first-child .page-link,
+ .page-item:last-child .page-link {
+ padding: 5px;
+ background-color: #f2f2f2;
+ color: #333;
+ text-decoration: none;
+ border: 1px solid #ccc;
+ border-radius: 3px;
+ }
+
+
+ .page-item:first-child .page-link:hover,
+ .page-item:last-child .page-link:hover {
+ background-color: #e0e0e0;
+ }
+
+
+ .page-item:first-child .page-link span,
+ .page-item:last-child .page-link span {
+ font-size: 12px;
+ }
+
+
+    </style>
+</head>
+
+<body style="margin:0px">
+<div>
+    <div style="margin-left:20px">최종 업데이트 시간 : {{ update_time }}</div>
+    <table>
+        <tr>
+            <th>번호</th>
+            <th>사이트</th>
+            <th>지원분야</th>
+            <th>지원사업명</th>
+            <th>등록일</th>
+            <th>마감일</th>
+            <th>관련부처</th>
+            <th>수행기관</th>
+            <th>조회수</th>
+            <th>입력일시</th>
+            <th>수정일시</th>
+        </tr>
+
+        {% set start_index = (current_page - 1) * 16 %}
+        {% set end_index = current_page * 16 %}
+
+        {% for data in data_list[start_index:end_index] %}
+        <tr>
+            <td>{{ data['number'] }}</td>
+            <td>{{ data['site'] }}</td>
+            <td>{{ data['support'] }}</td>
+
+            {% if data['site'] == '비즈인포' %}
+            <td>
+                <a href="https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?{{ data['link'] }}"
+                   class="name">
+                    {{ data['name'] }}
+                </a>
+            </td>
+            {% elif data['site'] == 'k스타트업' %}
+            <td>
+                <a href="https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=view&pbancSn={{ data['link'] }}&page=1&schStr=regist&pbancEndYn=N"
+                   class="name">
+                    {{ data['name'] }}
+                </a>
+            </td>
+            {% elif data['site'] == '서울경제진흥원' %}
+            <td>
+                <a href="https://seoul.rnbd.kr/client/c030100/{{ data['link'] }}"
+                   class="name">
+                    {{ data['name'] }}
+                </a>
+            </td>
+            {% elif data['site'] == 'iris' %}
+            <td>
+                <a href="#" onclick="f_bsnsAncmBtinSituListForm_view('{{ data['link'] }}','ancmIng'); return false;"
+                   class="name">
+                    {{ data['name'] }}
+                </a>
+            </td>
+
+            {% else %}
+            <td>{{ data['name'] }}</td>
+            {% endif %}
+
+            <td>{{ data['r_date'] }}</td>
+            <td>{{ data['d_dates'] }}</td>
+            <td>{{ data['re_min'] }}</td>
+            <td>{{ data['agency'] }}</td>
+            <td>{{ data['views'] }}</td>
+            <td>{{ data['datetime'] }}</td>
+            <td>{{ data['last_time'] }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+<br>
+
+<div class="pagination">
+    {% set items_per_page = 20 %}
+    {% set total_items = 100 %}
+
+    {% set prev_page = current_page - 1 %}
+    {% set next_page = current_page + 1 %}
+
+    {% if prev_page >= 1 %}
+    <a href="?page={{ prev_page }}">이전</a>
+    {% endif %}
+
+    {% for page in range(1, total_pages + 1) %}
+    {% if page == current_page %}
+    <a href="?page={{ page }}" class="current-page">{{ page }}</a>
+    {% else %}
+    <a href="?page={{ page }}">{{ page }}</a>
+    {% endif %}
+    {% endfor %}
+
+
+    {% if next_page <= total_pages %}
+    <a href="?page={{ next_page }}">다음</a>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
+
