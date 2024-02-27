@@ -313,7 +313,7 @@ def form():
         data_list.append(data)
 
     current_page = request.args.get('page', default=1, type=int)
-    total_page = (len(data_list) / 12)
+    total_page = (len(data_list) / 14)
     total_pages = math.trunc(total_page)
     return render_template('python_crowling.html', update_time=update_time, data_list=data_list,
                            current_page=current_page,
