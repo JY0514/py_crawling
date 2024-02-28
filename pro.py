@@ -9,9 +9,11 @@ from bs4 import BeautifulSoup
 from flask import Flask, request, render_template
 import re
 
+
 def dbconnect():
     conn = pymysql.connect(host='127.0.0.1', user='root', password='1234', db='localDB', charset='utf8')
     return conn
+
 
 try:
     connection = dbconnect()
@@ -22,6 +24,7 @@ try:
 except Exception as e:
     print("DB 접속 중 오류 발생 : ", str(e))
 
+
 # k스타트업
 def insert1(conn):
     global flag_type_tags, txt_list, li_list, sql, sqls
@@ -31,8 +34,6 @@ def insert1(conn):
     html_content1 = response1.text
     soup1 = BeautifulSoup(html_content1, 'html.parser')
     if soup1:
-        custom_search_wrap = soup1.find_all('div', 'custom_search-wrap')
-        # print(custom_search_wrap)
         ann_cont_list = soup1.find_all('div', 'slide')
 
         for slide in ann_cont_list:
@@ -102,6 +103,7 @@ def insert1(conn):
                         cur.execute(sqls)
             conn.commit()
 
+
 # ----------------------------------------------------------------------------
 # 비즈인포
 def insert2(conn):
@@ -114,7 +116,6 @@ def insert2(conn):
     if tbody:
         tr_list = tbody.find_all('tr')
         conn = dbconnect()
-        cur = conn.cursor()
         for tr in tr_list:
             td_list = tr.find_all('td')
             values = [td.text.strip() for td in td_list]
@@ -140,24 +141,20 @@ def insert2(conn):
                 result = cur.fetchone()
                 count = result[0]
 
-                # 크롤링 데이터 table 존재여부 체크
                 if count == 0:
                     # 신규 데이터
                     print("INSERT-> " + hrefs)
                     sql = (
                         f"INSERT INTO localdb.crawling (사이트,지원분야,지원사업명,등록일,마감일,관련부처,수행기관,조회수, 링크, 입력일시) VALUES ( '{site}', '{support}', '{name}', '{r_date}', '{d_date}', '{re_min}', '{agency}', '{views}','{hrefs}', NOW() )")
                     cur.execute(sql)
-                elif count != 0:  # 링크가 중복되는게 있으면 1이상 나와서 데이터가 변경된 사항이 있는지 체크한다.
-                    # 존재 데이터
+                elif count != 0:
                     check_sql = (
                         f"SELECT count(*) FROM crawling WHERE 지원사업명 = '{name}' AND 마감일 = '{d_date}' AND 관련부처 = '{re_min}' AND 수행기관 = '{agency}' ")
                     cur.execute(check_sql)
                     result = cur.fetchone()
                     count_data = result[0]
 
-                    # 데이터의 변경 사항 체크
                     if count_data == 0:
-                        # 변경 시 해당 row의 데이터 UPDATE 처리
                         print("UPDATE-> " + hrefs)
                         sqls = (
                             f"UPDATE localdb.crawling SET 지원사업명 = '{name}', 마감일 = '{d_date}', 관련부처 = '{re_min}', 수행기관 = '{agency}', 수정일시 = NOW() WHERE 링크 = '{hrefs}'")
@@ -201,24 +198,19 @@ def insert3(conn):
         result = cur.fetchone()
         count = result[0]
 
-        # 크롤링 데이터 table 존재여부 체크
         if count == 0:
-            # 신규 데이터
             print("INSERT-> " + hrefs)
             sql = (
                 f"INSERT INTO localdb.crawling (사이트,지원분야,지원사업명,등록일,마감일,관련부처,수행기관,조회수, 링크, 입력일시) VALUES ( '{site}', '{support}', '{name}', '{r_date}', '{d_date}', '{re_min}', '{agency}', '{views}','{hrefs}', NOW() )")
             cur.execute(sql)
-        elif count != 0:  # 링크가 중복되는게 있으면 1이상 나와서 데이터가 변경된 사항이 있는지 체크한다.
-            # 존재 데이터
+        elif count != 0:
             check_sql = (
                 f"SELECT count(*) FROM crawling WHERE 지원사업명 = '{name}' AND 마감일 = '{d_date}' AND 관련부처 = '{re_min}' AND 수행기관 = '{agency}' ")
             cur.execute(check_sql)
             result = cur.fetchone()
             count_data = result[0]
 
-            # 데이터의 변경 사항 체크
             if count_data == 0:
-                # 변경 시 해당 row의 데이터 UPDATE 처리
                 print("UPDATE-> " + hrefs)
                 sqls = (
                     f"UPDATE localdb.crawling SET 지원사업명 = '{name}', 마감일 = '{d_date}', 관련부처 = '{re_min}', 수행기관 = '{agency}', 수정일시 = NOW() WHERE 링크 = '{hrefs}'")
@@ -239,7 +231,7 @@ def insert4(conn):
         dates = [date_range.split(' ~ ') for date_range in date_ranges]
         site = '서울경제진흥원'
         support = 'R&D'
-        re_min ='X'
+        re_min = 'X'
         agency = 'X'
         t1 = body.find_all('td', 't1')
         links = [link.a.get('href') for link in t1]
@@ -257,24 +249,20 @@ def insert4(conn):
             result = cur.fetchone()
             count = result[0]
 
-            # 크롤링 데이터 table 존재여부 체크
             if count == 0:
                 # 신규 데이터
                 print("INSERT-> " + hrefs)
                 sql = (
                     f"INSERT INTO localdb.crawling (사이트,지원분야,지원사업명,등록일,마감일,관련부처,수행기관,조회수, 링크, 입력일시) VALUES ( '{site}', '{support}', '{name}', '{r_date}', '{d_date}', '{re_min}', '{agency}', '{views}','{hrefs}', NOW() )")
                 cur.execute(sql)
-            elif count != 0:  # 링크가 중복되는게 있으면 1이상 나와서 데이터가 변경된 사항이 있는지 체크한다.
-                # 존재 데이터
+            elif count != 0:
                 check_sql = (
                     f"SELECT count(*) FROM crawling WHERE 지원사업명 = '{name}' AND 마감일 = '{d_date}' AND 관련부처 = '{re_min}' AND 수행기관 = '{agency}' ")
                 cur.execute(check_sql)
                 result = cur.fetchone()
                 count_data = result[0]
 
-                    # 데이터의 변경 사항 체크
                 if count_data == 0:
-                    # 변경 시 해당 row의 데이터 UPDATE 처리
                     print("UPDATE-> " + hrefs)
                     sqls = (
                         f"UPDATE localdb.crawling SET 지원사업명 = '{name}', 마감일 = '{d_date}', 관련부처 = '{re_min}', 수행기관 = '{agency}', 수정일시 = NOW() WHERE 링크 = '{hrefs}'")
@@ -307,7 +295,7 @@ def form():
             'views': result[i][8],
             'link': result[i][9],
             'datetime': result[i][10],
-            'last_time' : result[i][11]
+            'last_time': result[i][11]
         }
         data_list.append(data)
 
@@ -317,8 +305,12 @@ def form():
     return render_template('python_crowling.html', update_time=update_time, data_list=data_list,
                            current_page=current_page,
                            total_pages=total_pages)
+
+
 def run_app():
     app.run(host="0.0.0.0", port="8080")
+
+
 def main():
     conn = dbconnect()
     insert2(conn)
@@ -330,7 +322,8 @@ def main():
     print("크롤링이 돌아가는 시간:", update_time)
     print('데이터 저장 실행중...')
 
-schedule.every(10).seconds.do(main)
+
+schedule.every(5).minutes.do(main)
 schedule.every(1).hours.do(main)
 
 app_thread = threading.Thread(target=run_app)
