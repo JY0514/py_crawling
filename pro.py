@@ -323,8 +323,8 @@ def main():
     print('데이터 저장 실행중...')
 
 
-schedule.every(5).minutes.do(main)
-schedule.every(1).hours.do(main)
+# schedule.every(5).minutes.do(main)
+schedule.every(1).hours.do(main)   # 한시간마다 ...
 
 app_thread = threading.Thread(target=run_app)
 app_thread.start()
