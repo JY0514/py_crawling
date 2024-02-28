@@ -13,7 +13,6 @@ def dbconnect():
     conn = pymysql.connect(host='127.0.0.1', user='root', password='1234', db='localDB', charset='utf8')
     return conn
 
-
 try:
     connection = dbconnect()
     if connection:
@@ -125,7 +124,7 @@ def insert2(conn):
             r_date = values[6]
             date_pattern = re.compile(r'\d{4}-\d{2}-\d{2} ~')
             d_dates = values[3]
-            d_date = date_pattern.sub('', d_dates.text.strip())
+            d_date = date_pattern.sub('', d_dates.strip())
             re_min = values[4]
             agency = values[5]
             views = values[7]
@@ -182,10 +181,10 @@ def insert3(conn):
         names = form.find('strong', 'title')
         name = names.text.strip()
         a_tag = names.find('a')
-        if a_tag:  # a 태그가 있다면
-            href = a_tag.get('onclick')
-            numbers = re.findall(r'\d+', href)
-            hrefs = numbers[0]
+        onclick_value = a_tag.get('onclick')  # 'onclick' 속성의 값을 가져옵니다.
+        numbers = re.findall(r'\d+', onclick_value)  # 숫자를 찾습니다.
+
+        hrefs = numbers[0]
 
         ancmDe = form.find('span', 'ancmDe')
         date = ancmDe.text.strip()
@@ -322,10 +321,10 @@ def run_app():
     app.run(host="0.0.0.0", port="8080")
 def main():
     conn = dbconnect()
-    # insert2(conn)
-    # insert1(conn)
+    insert2(conn)
+    insert1(conn)
     insert3(conn)
-    # insert4(conn)
+    insert4(conn)
 
     update_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("크롤링이 돌아가는 시간:", update_time)
