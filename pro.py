@@ -320,7 +320,7 @@ def main():
 
     update_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("크롤링이 돌아가는 시간:", update_time)
-    print('데이터 저장 실행중...')
+    print('데이터 저장 실행중...!')
 
 
 # schedule.every(5).minutes.do(main)
